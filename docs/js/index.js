@@ -61,14 +61,14 @@
         table.innerHTML = newElements.map((e, i) => `<tr data-precio="${e.precio}">
                             <td scope="row">${i+1}</td> 
                             <td>${e.img}</td>
-                            <td><img src="./img/${e.img}"   width="23%"/></td>
+                            <td><img src="./img/${e.img}"   class="rounded float-left " style="width:6em"/></td>
                             <td>${formatMoney.format(e.precio)}</td>
                             <td>${formatMoney.format(e.precio * input.value)}</td>
                             </tr>`).join('');
     }
     tablePisos.innerHTML=Prodcutos.map((e, i) => `<tr data-costo="${e.costo}">
                                                     <td scope="row">${i+1}</td> 
-                                                    <td><img src="./img/${e.img}"   style="width:${(e.img==='mezclador.jpg'?'10%':'23%')}"/></td>
+                                                    <td><img src="./img/${e.img}"   class="rounded float-left " style="width:6em"/></td>
                                                     <td><a href="${e.url}" class="btn btn-link" target="_blank"> ${e.text}</a></td>
                                                     <td>${formatMoney.format(e.costo)}</td>
                                                     <td><input type="number" value="1"/></td>
@@ -99,7 +99,7 @@
     const modalShow=(e)=>{
         console.log(e.target.nodeName)
         if(e.target.nodeName==='IMG'){
-            modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.src}" style="width: 40%;"/></center>`
+            modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.src}" class="img-fluid" alt="Responsive image"/></center>`
             $(modal).modal('show')
             
         }else if(e.target.nodeName==='INPUT'){
