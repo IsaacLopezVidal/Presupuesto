@@ -120,6 +120,7 @@
     input.addEventListener('keyup', calucula)
     select.addEventListener('change',function(){
         createTable(this.value)
+        calculaTotal()
     })
     const modal=document.getElementById('modalImg')
     table.addEventListener('click',modalShow)
