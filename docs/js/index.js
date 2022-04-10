@@ -99,7 +99,7 @@
     const modalShow=(e)=>{
         console.log(e.target.nodeName)
         if(e.target.nodeName==='IMG'){
-            modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.src}" style="width: 70vh;"/></center>`
+            modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.src}" style="width: 40%;"/></center>`
             $(modal).modal('show')
             
         }else if(e.target.nodeName==='INPUT'){
