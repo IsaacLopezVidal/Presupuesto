@@ -83,6 +83,7 @@
                 e.children[3].innerHTML = 0
             }
         })
+        calculaTotal()
     }
     const calculaTotal=()=>{
         let Total=0;
