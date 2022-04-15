@@ -1,51 +1,49 @@
-(function () {
+
+(async function () {
+    const url =`http://192.168.0.22:3000/`;
     const formatMoney = new Intl.NumberFormat('es-MX', {
         style: 'currency',
         currency: 'MXN'
     });
-    const elementos = [
-        { img: "1.jpeg", precio: 245 }
-        , { img: "2.jpeg", precio: 235 }
-        , { img: "3.jpeg", precio: 289 }
-        , { img: "4.jpeg", precio: 698.99 }
-        , { img: "6.jpeg", precio: 219 ,selected:true}
-        , { img: "7.jpeg", precio: 229.01 }
-        , { img: "8.jpeg", precio: 195 }
-    ].sort(function (a, b) {
+    let response = await fetch(url).then(res=>res.json())  
+    const {Pisos,Productos}= response; 
+    const elementos = [ ... Pisos ].sort(function (a, b) {
         return a.precio - b.precio;
     });
-    const Prodcutos=[
-        {
-            url:'https://www.amazon.com.mx/dp/B013UZYD8G/ref=cm_sw_r_apan_glt_i_XPYRTECAC7FKZ8GQFSVN?th=1',
-            text:'Pretul CAZ-40P, Cortador de azulejo 40 cm (15"), Pretul',
-            img:'pretul.jpg',
-            costo:279
-        },
-        {
-            url:'https://www.amazon.com.mx/dp/B098WZ9QWX/ref=cm_sw_r_apan_glt_i_T6J4R3BFA8JHNW5V6D1X',
-            text:'bobotron 151 unidades de espaciadores de nivel de cerámica planos para azulejos',
-            img:'bobotron.jpg',
-            costo:372
-        },
-        {
-            url:'https://www.amazon.com.mx/dp/B00UY245XM/ref=cm_sw_r_apan_glt_i_R119W3157BBMK9E3AGND',
-            text:'Mini Esmeriladora 4.1/2 820W 11000Rpm 5/8-11 6 Dis B+D G720P',
-            img:'esmeril.jpg',
-            costo:719
-        },
-        {
-            url:'https://www.amazon.com.mx/dp/B08HV6J9W3/ref=cm_sw_r_apan_glt_i_9BFTEPK6XNTCWN6Y4GAT',
-            text:'King Showden - Mezclador de mortero eléctrico de 2100 W',
-            img:'KingShowden.jpg',
-            costo:1863.61
-        },
-        {
-            url:'https://www.amazon.com.mx/dp/B08LPHD7GT/ref=cm_sw_r_apan_glt_i_8DABH825MPJDJGXMZD56?th=1',
-            text:'Mezclador de pintura y mortero | 16 pulgadas de largo',
-            img:'mezclador.jpg',
-            costo:229.69
-        },
-    ]
+    const layout=(mode)=>(`
+        <div class="modal-content px-5 py-5">
+        <form data-mode="${mode}">
+        <input type="hidden" id="id" value=""/>
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <label for="text" class="form-label">Descripcion del articulo</label>
+                    <input type="text" class="form-control" id="text" required/>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="costo" class="form-label">Costo</label>
+                    <input type="number" step="0.01" class="form-control" id="costo" required />
+                </div>
+                <div class="col-12 col-md-2">
+                    <label for="cantidad" class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" id="cantidad" value="1" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <label for="url" class="form-label">Url del articulo</label>
+                    <input type="text" class="form-control" id="url" aria-describedby="url" />
+                </div>
+                <div class="col-12 col-md-6">
+                    <label for="img" class="form-label">Url Imagen</label>
+                    <input type="text" class="form-control" id="img" />
+                    <div id="imgHelp" class="form-text">(Opcional)</div>
+                </div>
+            </div>
+         
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+        </form>
+      </div>`
+    )
     const input = document.getElementById('metros')
     const table = document.getElementById('Pisos')
     const tablePisos = document.getElementById('Articulos')
@@ -61,17 +59,26 @@
         table.innerHTML = newElements.map((e, i) => `<tr data-precio="${e.precio}">
                             <td scope="row">${i+1}</td> 
                             <td>${e.img}</td>
-                            <td><img src="./img/${e.img}"   class="rounded float-left " style="width:6em"/></td>
+                            <td><img src="${url}img/${e.img}"   class="rounded float-left " style="width:6em"/></td>
                             <td>${formatMoney.format(e.precio)}</td>
                             <td>${formatMoney.format(e.precio * input.value)}</td>
                             </tr>`).join('');
     }
-    tablePisos.innerHTML=Prodcutos.map((e, i) => `<tr data-costo="${e.costo}">
-                                                    <td scope="row">${i+1}</td> 
-                                                    <td><img src="./img/${e.img}"   class="rounded float-left " style="width:6em"/></td>
-                                                    <td><a href="${e.url}" class="btn btn-link" target="_blank"> ${e.text}</a></td>
+    tablePisos.innerHTML=Productos.map((e, i) => `<tr id="${e.id}" data-costo="${e.costo}">
+                                                    <td scope="row" >
+                                                        <div class="d-grid gap-2 d-md-block">
+                                                            <span class="delete btn btn-sm btn-danger mx-2"><i class="fa-solid fa-trash"></i></span>
+                                                            <span class="edit btn btn-sm btn-info mx-2"><i class="fa-solid fa-pen-to-square"></i></span>
+                                                        </div>
+                                                    </td> 
+                                                    <td>
+                                                        ${(e.img?`<img src="${(e.img.includes('http')?e.img:`${url}img/${e.img}`)}" class="d-none d-md-block rounded float-left " style="width:6em"/>
+                                                        <span class="d-block d-md-none btn btn-link" data-src="${(e.img.includes('http')?e.img:`${url}img/${e.img}`)}" ><i class="fa-solid fa-image"></i> Ver</span>`:`<span class="d-block "><i class="fa-solid fa-image"></i><br/>Sin imagen</span>`)}
+                                                        
+                                                    </td>
+                                                    <td><a href="${e.url}" class="btn btn-link text-center text-wrap" target="_blank"> ${e.text}</a></td>
                                                     <td>${formatMoney.format(e.costo)}</td>
-                                                    <td><input type="number" value="1"/></td>
+                                                    <td><input type="number" value="${e.cantidad}" style="width:70px"/></td>
                                                     </tr>`).join('');
     function calucula() {
         const trs = [...table.querySelectorAll('tr')]
@@ -84,6 +91,30 @@
             }
         })
         calculaTotal()
+    }
+    const submit=async(e)=>{
+        e.preventDefault();
+        let method='';
+        const modo=e.target.dataset.mode;
+        if(modo==1)method="POST";
+        else method="PUT"
+        response = await fetch(url,{
+            method,
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                "cantidad":Number(e.target.cantidad.value)
+                ,"costo":Number(e.target.costo.value)
+                ,"text":e.target.text.value
+                ,"url":e.target.url.value
+                ,"img":e.target.img.value
+                ,"id":Number(e.target.id.value)
+            })
+        }).then(res=>res.json())
+        if(response.exito){
+            location.reload();
+        }
     }
     const calculaTotal=()=>{
         let Total=0;
@@ -98,16 +129,43 @@
         select.innerHTML+=elementos.map((e,i)=>`<option value="${e.img}" data-precio=${e.precio}" ${(e?.selected?'selected':'')}>No. ${i+1} - ${e.img} - ${formatMoney.format(elementos[i].precio)}</option>`).join('')
     }
     const modalShow=(e)=>{
-        console.log(e.target.nodeName)
-        if(e.target.nodeName==='IMG'){
+        console.log(e.target.className)
+        if(e.target.nodeName==='IMG' && e.target.src){
             modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.src}" class="img-fluid" alt="Responsive image"/></center>`
             $(modal).modal('show')
-            
         }else if(e.target.nodeName==='INPUT'){
             const input = e.target;
             input.addEventListener('keypress',calculaTotal)
             input.addEventListener('keyup',calculaTotal)
             input.addEventListener('blur',calculaTotal)
+        }else if(e.target.nodeName==='SPAN' && e.target.dataset.src){
+            modal.querySelector('.modal-dialog').innerHTML=`<center><img src="${e.target.dataset.src}" class="img-fluid" alt="Responsive image"/></center>`
+            $(modal).modal('show')
+        }else if(e.target.nodeName==='SPAN' && (e.target.className.includes("delete")||e.target.className.includes('fa-trash'))){
+            fetch(url,{
+                method:"DELETE",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({id:Number(e.target.closest("tr").id)})
+            }).then(res=>res.json())
+            .then(({exito})=>{
+                if(exito){
+                    location.reload();
+                }
+            })
+        }
+        else if(e.target.nodeName==='SPAN' && (e.target.className.includes("edit")||e.target.className.includes('fa-pen-to-square'))){
+            const Obj = Productos.find(o=>o.id==e.target.closest("tr").id)
+            modal.querySelector('.modal-dialog').innerHTML=layout(2)
+            const form =modal.querySelector('form');
+            form.addEventListener('submit',submit)
+            const keys = Object.keys(Obj);
+            console.log(keys)
+            keys.forEach(e=>{
+                form[e].value=Obj[e]
+            })
+            $(modal).modal('show')
         }
     }
     const Dispatch = (elemento,evtDispatch) => {
@@ -123,10 +181,14 @@
         createTable(this.value)
         calculaTotal()
     })
+    document.getElementById('addProduct').addEventListener('click',async ()=>{
+        modal.querySelector('.modal-dialog').innerHTML=layout(1)
+        modal.querySelector('form').addEventListener('submit',submit)
+        $(modal).modal('show')
+    })
     const modal=document.getElementById('modalImg')
     table.addEventListener('click',modalShow)
     tablePisos.addEventListener('click',modalShow)
-    // createTable()
     createSelect()
     Dispatch(select,'change')
     calculaTotal()
