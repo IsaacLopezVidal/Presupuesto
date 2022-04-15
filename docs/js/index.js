@@ -1,6 +1,6 @@
 
 (async function () {
-    const url =`http://192.168.0.22:3000/`;
+    const url =`http://70.35.199.113/`;
     const formatMoney = new Intl.NumberFormat('es-MX', {
         style: 'currency',
         currency: 'MXN'
